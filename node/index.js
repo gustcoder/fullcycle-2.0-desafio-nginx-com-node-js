@@ -26,34 +26,55 @@ const connection = mysql.createConnection(config)
 
 connection.query('USE information_schema')
 
-let tableExists = []
-
-tableExists = connection.query("SELECT table_name FROM tables WHERE table_name = 'people';", function (err, result, fields) {
-    if (err) throw err;
-    
-    return result
-});
-
-console.log(tableExists)
-
-connection.query('USE nodedb')
-if (tableExists.length == 0) { 
-    const sqlCreateTablePeople = 'CREATE TABLE people (id int not null auto_increment, name varchar(255), primary key(id));'
-    connection.query(sqlCreateTablePeople)
+function checkIfTablePeopleExists(sql) {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, function (err, results, fields) {
+            if(err) reject(err);
+            
+            resolve(results);
+        });        
+    });
 }
 
-const sqlInsertName = `INSERT INTO people (name) VALUES ('Aluno ${rndInt}');`
-connection.query(sqlInsertName)
-
+function createTablePeople(sql) {
+    return new Promise((resolve, reject) => {
+        connection.query('USE nodedb')
+        connection.query(sql, function (err, results, fields) {
+            if(err) reject(err);
+            
+            resolve(results);
+        });
+    });    
+}
+        
 let names = []
 
-connection.query('SELECT name FROM people ORDER BY name;', function (err, result, fields) {
-    if (err) throw err;
-    
-    names = result
-});
+async function checkAndCreateTablePeopleIfNeeded() {
+    try {
+        sql = "SELECT table_name FROM tables WHERE table_name = 'people';"
+        const result = await checkIfTablePeopleExists(sql);
+        if (result.length == 0) { 
+            const sqlCreateTablePeople = 'CREATE TABLE people (id int not null auto_increment, name varchar(255), primary key(id));'
+            await createTablePeople(sqlCreateTablePeople)
+            console.log(':: Table people created ::')
+        }
+        connection.query('USE nodedb')
+        const sqlInsertName = `INSERT INTO people (name) VALUES ('Aluno ${rndInt}');`
+        connection.query(sqlInsertName)
+        console.log(':: User registered successfully ::')
+        
+        connection.query('SELECT name FROM people ORDER BY name;', function (err, result, fields) {
+            if (err) throw err;
+            
+            names = result
+        });
+        connection.end()
+    } catch (err) {
+        console.error('Error', err);
+    }    
+}
 
-connection.end()
+checkAndCreateTablePeopleIfNeeded()
 
 app.get('/', (req, res) => {
     let tableLines = ''
