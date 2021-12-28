@@ -1,3 +1,6 @@
-## https://hub.docker.com/repository/docker/gustcoder/nginx-com-node-js/general
+## 1. Por gentileza executar o comando
 
-### docker run --rm gustcoder/nginx-com-node-js
+```
+docker-compose up -d
+```
+## 2. Acessar http://localhost:8080
