@@ -1,25 +1,14 @@
 version: '3'
 
 services:
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    image: gustcoder/nginx
-    container_name: nginx
-    ports:
-      - "8080:80"
-    tty: true
-    networks:
-      - node-network
-
   nodejs:
     build:
-      context: ./node
+      context: node
       dockerfile: Dockerfile
     image: gustcoder/nodejs
     container_name: nodejs
     entrypoint: dockerize -wait tcp://db:3306 -timeout 20s
+    command: node index.js
     tty: true
     ports:
       - "3000:3000"
@@ -28,7 +17,7 @@ services:
     networks:
       - node-network
     depends_on:
-      - db      
+      - db
 
   db:
     image: mysql:5.7
@@ -43,6 +32,20 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     networks:
       - node-network      
+
+  nginx:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    image: gustcoder/nginx
+    container_name: nginx
+    ports:
+      - "8080:80"
+    tty: true
+    networks:
+      - node-network  
+    depends_on:
+      - nodejs    
 
 networks:
   node-network:

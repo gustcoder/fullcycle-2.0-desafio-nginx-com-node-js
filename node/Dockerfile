@@ -12,5 +12,3 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 COPY . .
 
 EXPOSE 3000
-
-CMD tail -f /dev/null

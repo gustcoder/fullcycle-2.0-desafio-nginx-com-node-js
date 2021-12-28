@@ -1,5 +1,3 @@
 FROM nginx:1.15.0-alpine
 
-COPY ./default.conf /etc/nginx/conf.d/
-
-CMD tail -f /dev/null
+COPY default.conf /etc/nginx/conf.d/

@@ -58,6 +58,7 @@ async function checkAndCreateTablePeopleIfNeeded() {
             await createTablePeople(sqlCreateTablePeople)
             console.log(':: Table people created ::')
         }
+
         connection.query('USE nodedb')
         const sqlInsertName = `INSERT INTO people (name) VALUES ('Aluno ${rndInt}');`
         connection.query(sqlInsertName)
@@ -68,6 +69,7 @@ async function checkAndCreateTablePeopleIfNeeded() {
             
             names = result
         });
+
         connection.end()
     } catch (err) {
         console.error('Error', err);
