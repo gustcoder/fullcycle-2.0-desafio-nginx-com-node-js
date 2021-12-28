@@ -22,9 +22,26 @@ function queryNames(query) {
 
 const mysql = require('mysql')
 
-// create table people (id int not null auto_increment, name varchar(255), primary key(id));
-
 const connection = mysql.createConnection(config)
+
+connection.query('USE information_schema')
+
+let tableExists = []
+
+tableExists = connection.query("SELECT table_name FROM tables WHERE table_name = 'people';", function (err, result, fields) {
+    if (err) throw err;
+    
+    return result
+});
+
+console.log(tableExists)
+
+connection.query('USE nodedb')
+if (tableExists.length == 0) { 
+    const sqlCreateTablePeople = 'CREATE TABLE people (id int not null auto_increment, name varchar(255), primary key(id));'
+    connection.query(sqlCreateTablePeople)
+}
+
 const sqlInsertName = `INSERT INTO people (name) VALUES ('Aluno ${rndInt}');`
 connection.query(sqlInsertName)
 
